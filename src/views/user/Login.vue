@@ -1,6 +1,8 @@
 <template>
     <Row class="container">
-        <img src="../../assets/images/logo.png" />
+        <Row type="flex" justify="center">
+            <img src="../../assets/images/logo.png" style="margin: 30px 0" />
+        </Row>
 
         <Row type="flex" justify="center" >
             <Row type="flex" justify="center" class="login-box">
@@ -48,6 +50,18 @@
                     </FormItem>
                 </Form>
             </div>
+            <Button type="warning" @click="conciergeUseModal=true">Manage the connected concierge.</Button>
+            <div slot="footer">
+                <Button type="success" size="large" long :loading="conciergeLoading" @click="submit(form)">Submit</Button>
+            </div>
+        </Modal>
+
+        <Modal v-model="conciergeUseModal" @on-cancel="cancel" width="800px">
+            <p slot="header" class="header">
+                <Icon type="flag" color="#19be6b" style="margin-right: 10px"></Icon>
+                <span>Concierge connect</span>
+            </p>
+            <Table :columns="conciergeTableTitles" :data="conciergeLists"></Table>
             <div slot="footer">
                 <Button type="success" size="large" long :loading="conciergeLoading" @click="submit(form)">Submit</Button>
             </div>
@@ -67,6 +81,7 @@
                 form: {username: '', password: '', remember: '', mall_id: '', counter_id: '', terminal_id: ''},
                 conciergeLoading: false,
                 conciergeModal: false,
+                conciergeUseModal: false,
                 mallList: [
                     { id: 1, name: 'Mall 1' },
                     { id: 2, name: 'Mall 2' }
@@ -82,12 +97,51 @@
                     { id: 3, name: 'Terminal 3' },
                     { id: 4, name: 'Terminal 4' },
                 ],
+                conciergeTableTitles: [
+                    {key: 'mall_id', title: 'Mall Id'},
+                    {key: 'counter_id', title: 'Counter Id'},
+                    {key: 'terminal_id', title: 'Terminal Id'},
+                    {
+                        key: 'action',
+                        title: 'Action',
+                        render: (h) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'error',
+                                        size: 'small',
+                                        icon: 'android-delete'
+                                    },
+                                    style: {
+                                        marginLeft: '10px',
+                                    },
+                                    on: {
+                                        click: () => {
+
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
+                    },
+                ],
+                conciergeLists: [
+                    {
+                        mall_id: 1, counter_id: 3, terminal_id: 5,
+                    }
+                ]
             }
         },
         methods: {
             login(data){
                 console.log(data);
-                this.conciergeModal = true
+                this.conciergeModal = true;
+                fetch('http://rap2api.taobao.org/app/mock/12654//books')
+                    .then(res=>res.json())
+                    .then(res=>{
+                        console.log(res);
+
+                    })
             },
             submit(data){
                 console.log(data)
@@ -107,7 +161,7 @@
         padding: 50px;
         background: url("../../assets/images/signup-bg.png") no-repeat;
         background-size: cover;
-        height: 100%;
+        height: 800px;
     }
     .login-box{
         width: 500px;
